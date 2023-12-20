@@ -23,20 +23,20 @@ if ($conn->connect_error) {
 $input = $_GET['input'];
 
 // Perform a database query to get medicine names based on the input
-$sql = "SELECT id,medicine_name FROM medicine WHERE medicine_name LIKE '$input%'";
+$sql = "SELECT id, medicine_name FROM medicine WHERE medicine_name LIKE '$input%'";
 $result = $conn->query($sql);
 
-$options = "";
+$options = [];
 while ($row = $result->fetch_assoc()) {
-    //$options .= "<option value='{$row['id']}'>{$row['medicine_name']}</option>";
-    $options .= '<option value="' . $row['id'] . '">' . $row['medicine_name'] . '</option>';
+    $options[] = [
+        'id' => $row['id'],
+        'text' => $row['medicine_name'],
+    ];
 }
 
-// Send the options back to the JavaScript
-echo $options;
-
 // Send the options back to the JavaScript as JSON
-//header('Content-Type: application/json');
-//echo json_encode([0 => $options]);
+header('Content-Type: application/json');
+echo json_encode(['results' => $options]);
+
 $conn->close();
 ?>

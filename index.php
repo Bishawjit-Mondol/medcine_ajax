@@ -14,35 +14,69 @@
     <label for="medicineSelect">Medicine Name</label>
     <select class="mySelect" id="medicineSelect" name="state">
         <option value="">Select a option</option>
-
     </select>
 </div>
 
 <script>
-    $(document).ready(function () {
-        // Initialize Select2
-        $('#medicineSelect').select2({
-            placeholder: 'Select an option',
-            ajax: {
-                method: 'GET',
-                url: 'get_medicine_names.php',
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return {
-                        input: params.term,  // Send the typed input to the server
-                    };
-                },
-                // processResults: function (data) {
-                //     return {
-                //         results: data
-                //     };
-                // },
-                cache: true
+    var timeout;
+
+    $('#medicineSelect').select2({
+        placeholder: 'Select an option',
+        ajax: {
+            method: 'GET',
+            url: 'get_medicine_names.php',
+            data: function (params) {
+                return {
+                    input: params.term,
+                };
+            },
+            processResults: function (data) {
+                return {
+                    results: data.results,
+                };
+            },
+            cache: true,
+            // Debounce the input
+            // this process is used for reduce the user waiting time
+            //input minimum lenght will be 1
+            delay: 250,
+            transport: function (params, success, failure) {
+                clearTimeout(timeout);
+                timeout = setTimeout(function () {
+                    return $.ajax(params).then(success).fail(failure);
+                }, 250);
             }
-        });
+        },
+        minimumInputLength: 1, // Adjust as needed
     });
+
+
+    // $(document).ready(function () {
+    //     // Initialize Select2
+    //     $('#medicineSelect').select2({
+    //         placeholder: 'Select an option',
+    //         ajax: {
+    //             method: 'GET',
+    //             url: 'get_medicine_names.php',
+    //             //dataType: 'json',
+    //             delay: 1000,
+    //             data: function (params) {
+    //                 return {
+    //                     input: params.term,  // Send the typed input to the server
+    //                 };
+    //             },
+    //             processResults: function (data) {
+    //                 console.log(data)
+    //                 return {
+    //                     results: data.results, // Parse the JSON data from the server
+    //                 };
+    //             },
+    //             cache: true
+    //         }
+    //     });
+    // });
 </script>
+
 
 </body>
 </html>
